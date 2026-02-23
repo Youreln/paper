@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>飞传 FileFly - 局域网高速文件传输</title>
+    <meta name="description" content="飞传 FileFly - 局域网高速文件传输工具，支持多设备间快速安全传输文件">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="飞传 FileFly">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    <div class="particles" id="particles"></div>
+    
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-paper-plane"></i>
+            <span>飞传 FileFly</span>
+        </div>
+        <div class="header-actions">
+            <a href="release/" class="download-btn-header" title="下载客户端">
+                <i class="fas fa-download"></i>
+                <span>下载客户端</span>
+            </a>
+            <a href="https://github.com/Youreln/FileFly" target="_blank" class="github-btn" title="GitHub 开源项目">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+            <button class="theme-toggle" id="themeToggle" title="切换主题">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="refresh-btn" id="refreshBtn" title="刷新">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <a href="settings.html" class="settings-btn" title="设置">
+                <i class="fas fa-cog"></i>
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="download-notice card animate-fade-in" id="downloadNotice">
+            <div class="notice-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="notice-content">
+                <h3>网页版功能受限说明</h3>
+                <p>当前为网页演示版本，完整功能请下载客户端：</p>
+                <ul>
+                    <li><i class="fas fa-desktop"></i> <strong>Windows/Mac/Linux</strong>：支持后台运行、系统托盘、开机自启</li>
+                    <li><i class="fas fa-mobile-alt"></i> <strong>Android/iOS</strong>：支持PWA安装、离线访问、推送通知</li>
+                </ul>
+                <div class="download-buttons">
+                    <a href="release/" class="download-btn primary">
+                        <i class="fas fa-download"></i> 下载客户端
+                    </a>
+                    <a href="https://github.com/Youreln/FileFly" target="_blank" class="download-btn secondary">
+                        <i class="fab fa-github"></i> 查看源码
+                    </a>
+                </div>
+            </div>
+            <button class="notice-close" id="closeNotice" title="关闭">
+                <i class="fas fa-times"></i>
+            </button>
+        </section>
+
+        <section class="connection-section card animate-fade-in" style="animation-delay: 0.1s;">
+            <h2><i class="fas fa-wifi"></i> 连接信息</h2>
+            <div class="connection-info">
+                <div class="qr-container">
+                    <div class="qr-placeholder" id="qrPlaceholder">
+                        <i class="fas fa-qrcode fa-3x"></i>
+                        <span>加载中...</span>
+                    </div>
+                    <img id="qrCode" class="qr-code hidden" alt="扫码连接">
+                </div>
+                <div class="addresses">
+                    <div class="address-item">
+                        <i class="fas fa-desktop"></i>
+                        <span>本地访问:</span>
+                        <code id="localAddress">加载中...</code>
+                    </div>
+                    <div class="address-item">
+                        <i class="fas fa-network-wired"></i>
+                        <span>局域网访问:</span>
+                        <code id="lanAddress">加载中...</code>
+                    </div>
+                    <div class="address-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>手机扫码连接</span>
+                    </div>
+                    <div class="all-addresses hidden" id="allAddresses">
+                        <h4><i class="fas fa-list"></i> 所有可用地址</h4>
+                        <ul id="addressList"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="upload-section card animate-fade-in" style="animation-delay: 0.2s;" id="upload">
+            <h2><i class="fas fa-cloud-upload-alt"></i> 上传文件</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <p class="upload-text">拖拽文件到此处，或点击选择文件</p>
+                <p class="upload-hint">支持多选、文件夹、截图粘贴 (Ctrl+V)</p>
+                <div class="upload-buttons">
+                    <label class="upload-btn">
+                        <i class="fas fa-file"></i> 选择文件
+                        <input type="file" id="fileInput" multiple hidden>
+                    </label>
+                    <label class="upload-btn folder-btn">
+                        <i class="fas fa-folder-open"></i> 选择文件夹
+                        <input type="file" id="folderInput" webkitdirectory multiple hidden>
+                    </label>
+                </div>
+            </div>
+            <div class="upload-progress hidden" id="uploadProgress">
+                <div class="progress-info">
+                    <span id="uploadFileName">上传中...</span>
+                    <span id="uploadSpeed">0 MB/s</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-percent" id="progressPercent">0%</div>
+            </div>
+        </section>
+
+        <section class="files-section card animate-fade-in" style="animation-delay: 0.3s;">
+            <div class="files-header">
+                <h2><i class="fas fa-folder-open"></i> 文件列表</h2>
+                <div class="files-actions">
+                    <button class="action-btn select-all-btn" id="selectAllBtn">
+                        <i class="fas fa-check-double"></i> 全选
+                    </button>
+                    <button class="action-btn download-selected-btn hidden" id="downloadSelectedBtn">
+                        <i class="fas fa-download"></i> 下载选中
+                    </button>
+                    <button class="action-btn danger clear-btn" id="clearBtn">
+                        <i class="fas fa-trash-alt"></i> 清空
+                    </button>
+                </div>
+            </div>
+            <div class="files-stats">
+                <span><i class="fas fa-file"></i> 共 <strong id="fileCount">0</strong> 个文件</span>
+                <span><i class="fas fa-hdd"></i> 总大小: <strong id="totalSize">0 B</strong></span>
+            </div>
+            <div class="files-list" id="filesList">
+                <div class="empty-state">
+                    <i class="fas fa-inbox fa-3x"></i>
+                    <p>暂无文件</p>
+                    <span>上传文件后将显示在这里</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="password-modal hidden" id="passwordModal">
+        <div class="modal-content card">
+            <h3><i class="fas fa-lock"></i> 请输入访问密码</h3>
+            <div class="password-input">
+                <input type="password" id="passwordInput" placeholder="输入密码" autofocus>
+                <button id="passwordSubmit">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <p class="error-msg hidden" id="passwordError">密码错误，请重试</p>
+        </div>
+    </div>
+
+    <div class="pwa-install-prompt hidden" id="pwaPrompt">
+        <div class="pwa-content">
+            <i class="fas fa-mobile-alt"></i>
+            <div>
+                <strong>安装到手机</strong>
+                <span>获得更好体验</span>
+            </div>
+        </div>
+        <button id="pwaInstall">安装</button>
+        <button id="pwaDismiss"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <footer class="footer">
+        <p>© 2026 <a href="https://github.com/Youreln/FileFly" target="_blank">Youreln</a> · 飞传 FileFly</p>
+        <p class="footer-links">
+            <a href="release/"><i class="fas fa-download"></i> 下载客户端</a>
+            <a href="https://github.com/Youreln/FileFly" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+        </p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed:', err));
+            });
+        }
+        
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwaPrompt').classList.remove('hidden');
+        });
+        
+        document.getElementById('pwaInstall')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('PWA install:', outcome);
+                deferredPrompt = null;
+                document.getElementById('pwaPrompt').classList.add('hidden');
+            }
+        });
+        
+        document.getElementById('pwaDismiss')?.addEventListener('click', () => {
+            document.getElementById('pwaPrompt').classList.add('hidden');
+        });
+        
+        document.getElementById('closeNotice')?.addEventListener('click', () => {
+            document.getElementById('downloadNotice').style.display = 'none';
+            localStorage.setItem('filefly_notice_closed', 'true');
+        });
+        
+        if (localStorage.getItem('filefly_notice_closed')) {
+            document.getElementById('downloadNotice').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Config
+config.json
+
+# Build output
+release/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Electron
+out/
+
+# PWA icons (generated)
+public/icons/
